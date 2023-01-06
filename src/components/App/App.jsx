@@ -1,44 +1,36 @@
-import { useEffect, useState } from 'react';
 import { Section } from 'components/Section/Section';
 import { Forms } from 'components/Forms/Forms';
 import { Contacts } from 'components/Contacts/Contacts';
+import { useSelector, useDispatch } from 'react-redux';
+import { setFilter } from 'redux/filterSlice';
+import { addContact, deleteContact } from 'redux/contactsSlice';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    const saveContacts = localStorage.getItem('contacts');
-    return saveContacts ? JSON.parse(saveContacts) : [];
-  });
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
 
   const filterContacts = contacts.length
     ? contacts.filter(contact => contact.name.toLowerCase().includes(filter))
     : [];
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addContact = data => {
+  const addCont = data => {
     if (contacts.length && contacts.find(item => item.name === data.name))
       return alert(
         'Are you sure about that? "' + data.name + '" is already in contacts.'
       );
 
-    setContacts(state => [...state, data]);
+    dispatch(addContact(data));
   };
 
-  const selectedContacts = text => {
-    setFilter(text.toLowerCase());
-  };
+  const selectedContacts = text => dispatch(setFilter(text));
 
-  const deleteContact = id => {
-    setContacts(state => state.filter(contact => contact.id !== id));
-  };
+  const deleteCont = id => dispatch(deleteContact(id));
 
   return (
     <Section>
       <Section title="Phonebook">
-        <Forms submit={addContact} />
+        <Forms submit={addCont} />
       </Section>
 
       {contacts.length > 0 && (
@@ -46,7 +38,7 @@ export const App = () => {
           <Contacts
             contacts={filterContacts}
             onSearch={selectedContacts}
-            onDelete={deleteContact}
+            onDelete={deleteCont}
           />
         </Section>
       )}
