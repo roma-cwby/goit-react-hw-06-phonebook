@@ -7,10 +7,10 @@ import { addContact, deleteContact } from 'redux/contactsSlice';
 
 export const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts);
+  const contacts = useSelector(state => state.contacts.contacts);
   const filter = useSelector(state => state.filter);
 
-  const filterContacts = contacts.length
+  const filterContacts = contacts?.length
     ? contacts.filter(contact => contact.name.toLowerCase().includes(filter))
     : [];
 
